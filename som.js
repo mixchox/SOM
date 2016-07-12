@@ -1,4 +1,3 @@
-//変数
 var R,R0;
 var lr,le0;
 var X = 20;
@@ -11,7 +10,7 @@ var refVector;
 var timeConstant;
 var timer;
 
-//初期化
+//initialization
 function init(){
 	t = 0;
 	R0 = (X > Y) ? (X / 2) : (Y / 2);
@@ -31,7 +30,7 @@ function init(){
 	}
 }
 
-//som
+//start som
 function som(){
 	init();
 	update();
@@ -39,47 +38,44 @@ function som(){
 
 //update
 function update(){
-	//inpVectorを決定
+	//set inputVector
 	setInpVector();
 
-	//R,lr更新
+	//update R and lr
 	R = R0 * Math.exp(-t / timeConstant);
 	lr = lr0 * Math.exp(-t / timeConstant);
 	
-	//学習回数
+	//this learning time
 	t++;
 
-	//BMU(Best Matched Unit)の決定
+	//initialize BMU(Best Matched Unit)
 	var bmu = {
 		x:0,
 		y:0
 	};
 	getBmu(bmu);
 
-	//refVectorの更新
+	//set refVector
 	setRefVector(bmu.x,bmu.y);
 
-	//htmlに表示
 	document.getElementById("t").textContent = t;
-
-	//canvasに描画
 	draw(bmu.x,bmu.y);
 
-	//制御
+	//restart update()
 	timer = setTimeout(function(){
 		update();
 	},10);
 	if(t >= T)clearTimeout(timer);
 }
 
-//inpVectorを決定
+//set InputVector
 function setInpVector(){
 	for(var d = 0;d < D;d++){
 		inpVector[d] = Math.random();
 	}
 }
 
-//BMU(Best Matched Unit)の決定
+//get BMU
 function getBmu(bmu){
 	var dist = 0;
 	var minDist = X * Y;
@@ -99,16 +95,12 @@ function getBmu(bmu){
 	}
 }
 
-//refVectorの更新
+//set refVector
 function setRefVector(BMUx,BMUy){
 	for(var x = 0;x < X;x++){
 		for(var y = 0;y < Y;y++){
 			var dist = (x - BMUx) * (x - BMUx) + (y - BMUy) * (y - BMUy);
-//			dist = Math.sqrt(dist);
-			//Rの外は更新しない
-		//	if(dist > R)continue;
 			
-			//更新式
 			var theta = Math.exp(-dist / (2 * R * R));
 			for(var d = 0;d < D;d++){
 				refVector[x][y][d] += theta * lr * (inpVector[d] - refVector[x][y][d]);
@@ -117,7 +109,7 @@ function setRefVector(BMUx,BMUy){
 	}
 }
 
-//描画
+//drawing
 function draw(BMUx,BMUy){
 	var canvas = document.getElementById("note");
 	if(canvas.getContext){
